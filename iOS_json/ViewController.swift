@@ -7,11 +7,17 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource,UISearchBarDelegate {
     
     let url = URL(string: "https://api.opendota.com/api/heroStats")
 
+    var isSearching = false
+    
+    var filteredData: [String] = []
+    
     var heroes = [heroStats]()
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     @IBOutlet weak var tableView: UITableView!
     
@@ -20,10 +26,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Do any additional setup after loading the view.
         downloadJSON()
         
+        searchBar.delegate = self
+        
+        for itm in heroes {
+            filteredData = [itm.localized_name]
+        }
+        tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return heroes.count
+        if isSearching {
+            return filteredData.count
+        } else{
+            return heroes.count
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -33,13 +49,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
         
+        //MARK: isSearching
+        
+        if isSearching {
+            cell.nameCell.text = filteredData[indexPath.row]
+        } else{
+        
         cell.nameCell.text = heroes[indexPath.row].localized_name
         cell.attributeCell.text = heroes[indexPath.row].primary_attr
         cell.attackCell.text = heroes[indexPath.row].attack_type
 
         if let imgURL = URL(string: "https://api.opendota.com" + self.heroes[indexPath.row].img){
             
-            //mark: method#1 downloading image files from cell
+            //MARK: method#1 downloading image files from cell
         DispatchQueue.global().async {
                 let data = try? Data(contentsOf: imgURL)
                 if let data = data{
@@ -50,8 +72,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }
+        }
         return cell
-    }
+    
+        }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "showDetail", sender: self)
     }
@@ -79,5 +103,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 }
             }
         }.resume()
+    }
+    //MARK: Search Bar config
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        filteredData = []
+        
+        if searchText == "" {
+            isSearching = false
+//            for o in self.heroes {
+//                self.filteredData = [o.localized_name]
+//            }
+            } else {
+            isSearching = true
+            
+            for item in heroes{
+               
+                if item.localized_name.lowercased().contains(searchText.lowercased()) {
+                    
+                    filteredData.append(item.localized_name)
+                }
+            }
+        }
+        tableView.reloadData()
     }
 }
