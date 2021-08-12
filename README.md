@@ -15,3 +15,7 @@ From old tutorial:
 https://www.youtube.com/watch?v=FNkS_QIngg8&list=PLg8MLrlXWLR2BYRMqnGawHDSaLJvbRsln&index=9
 
 https://www.youtube.com/watch?v=d9LtFtia4vc
+
+From tutorial about UISearchBar to iOS app to filter listings in a TableView:
+
+https://www.youtube.com/watch?v=iH67DkBx9Jc&list=PLg8MLrlXWLR2BYRMqnGawHDSaLJvbRsln&index=12
